@@ -1,108 +1,59 @@
-window.function = async function(api_key, endpoint, body, json) {
-  // GET VALUES FROM INPUTS, WITH DEFAULT VALUES WHERE APPLICABLE
-  const apiKey = api_key.value ?? "";
-  const endpointValue = endpoint.value ?? "";
-  const bodyValue = body.value ?? "";
-  const jsonValue = json.value ?? "";
+window.uploadFileToVectorStore = async function(api_key, file_url) {
+    if (!api_key.value) return "Error: OpenAI API Key is required.";
+    if (!file_url.value) return "Error: File URL is required.";
 
-  // INPUT VALIDATION
-  if (!apiKey) {
-    return "Error: API Key is required.";
-  }
-  if (!endpointValue) {
-    return "Error: API Endpoint is required.";
-  }
-  if (!bodyValue) {
-    return "Error: The Body (JSON) is required.";
-  }
-
-  // INITIALIZE VARIABLE FOR BODY JSON MESSAGE
-  let bodyMessage = "";
-
-  if (bodyValue) {
-    // TRY TO PARSE THE JSON TO SEE IF IT'S VALID
     try {
-      const parsedBodyJson = JSON.parse(bodyValue);
+        // SET VARIABLES
+        const OPENAI_API_KEY = api_key.value;
+        const fileUrl = file_url.value.trim();
 
-      // CHECK IF Body JSON IS EMPTY
-      if (Object.keys(parsedBodyJson).length === 0) {
-        return "Error: Invalid Body JSON Schema - Schema is empty.";
-      }
-    } catch (e) {
-      return "Error: Invalid Body JSON Schema";
-    }
-
-    // CREATE THE JSON MESSAGE
-    bodyMessage = `You must format your input as a JSON value. Your input will be parsed and type-checked according to the provided schema, so make sure all fields in your input match the schema exactly and there are no trailing commas! Do not, under any circumstances, include markdown or a markdown code-block in your response. Your response should be raw JSON only, with nothing else added.\n\nHere is the JSON Schema your input must adhere to:\n\n${bodyValue}`;
-  }
-
-  // INITIALIZE VARIABLE FOR JSON MESSAGE
-  let jsonMessage = "";
-
-  if (jsonValue) {
-    // TRY TO PARSE THE JSON TO SEE IF IT'S VALID
-    try {
-      const parsedJson = JSON.parse(jsonValue);
-
-      // CHECK IF JSON IS EMPTY
-      if (Object.keys(parsedJson).length === 0) {
-        return "Error: Invalid JSON Schema - Schema is empty.";
-      }
-    } catch (e) {
-      return "Error: Invalid JSON Schema";
-    }
-
-    // CREATE THE JSON MESSAGE
-    jsonMessage = `You must format your output as a JSON value. Your output will be parsed and type-checked according to the provided schema, so make sure all fields in your output match the schema exactly and there are no trailing commas! Do not, under any circumstances, include markdown or a markdown code-block in your response. Your response should be raw JSON only, with nothing else added.\n\nHere is the JSON Schema your output must adhere to:\n\n${jsonValue}`;
-  }
-
-  //let payload = bodyValue;
-
-  // PERFORM POST REQUEST TO OPENAI
-  try {
-    const response = await fetch(endpointValue, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'OpenAI-Beta': 'assistants=v2'
-      },
-      body: bodyValue //JSON.stringify(payload)
-    });
-
-    // IF THERE'S AN ERROR, RETURN THE ERROR MESSAGE
-    if (!response.ok) {
-      let errorMessage = `Error ${response.status} ${response.statusText}`;
-      try {
-        const errorData = await response.json();
-        if (errorData.error && errorData.error.message) {
-          errorMessage += `: ${errorData.error.message}`;
+        // FETCH FILE AS BLOB
+        const response = await fetch(fileUrl);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch file from ${fileUrl}: ${response.statusText}`);
         }
-      } catch (e) {
-        errorMessage += ": Unable to parse error details.";
-      }
-      return errorMessage;
-    }
+        const blob = await response.blob();
 
-    // ELSE, PARSE THE RESPONSE
-    let data;
-    try {
-      data = await response.json();
-    } catch (e) {
-      return "Error: Failed to parse API response.";
-    }
+        // GET ORIGINAL FILE NAME FROM URL
+        const fileName = fileUrl.split("/").pop().split("?")[0]; // Extract filename from URL
+        const fileExtension = fileName.split('.').pop().toLowerCase();
 
-    // SAFELY ACCESS ASSISTANT'S MESSAGE
-    if (data.id && data.id.length > 0) {
-      const assistantMessage = data.id;
-      // RETURN THE ASSISTANT MESSAGE
-      return assistantMessage;
-    } else {
-      return "Error: Received an invalid response from the API.";
-    }
+        // LIST OF ALLOWED FILE TYPES FOR VECTOR STORES
+        const allowedFileTypes = ["txt", "json", "csv", "tsv", "md", "pdf", "docx", "pptx"];
 
-  } catch (error) {
-    // CATCH ANY ERRORS THAT OCCUR WHILE FETCHING THE RESPONSE
-    return `Error: Request failed - ${error.message}`;
-  }
+        // CHECK IF FILE TYPE IS SUPPORTED
+        if (!allowedFileTypes.includes(fileExtension)) {
+            throw new Error(`Unsupported file type: .${fileExtension}. Allowed types: ${allowedFileTypes.join(", ")}`);
+        }
+
+        // CREATE FILE OBJECT PRESERVING MIME TYPE
+        const file = new File([blob], fileName, { type: blob.type });
+
+        // CREATE FORM DATA
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("purpose", "assistants");
+
+        // UPLOAD TO OPENAI
+        const uploadResponse = await fetch("https://api.openai.com/v1/files", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${OPENAI_API_KEY}`
+            },
+            body: formData
+        });
+
+        if (!uploadResponse.ok) {
+            const errorData = await uploadResponse.json();
+            throw new Error(`OpenAI API Error: ${errorData.error?.message || "Unknown error"}`);
+        }
+
+        // RETURN UPLOAD RESPONSE
+        const result = await uploadResponse.json();
+        return JSON.stringify(result, null, 2);
+
+    } catch (error) {
+        // RETURN ERROR
+        return `Error: ${error.message}`;
+    }
 };
