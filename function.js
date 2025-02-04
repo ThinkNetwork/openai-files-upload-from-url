@@ -1,4 +1,4 @@
-window.uploadFileToVectorStore = async function(api_key, file_url, purpose) {
+window.uploadFileToOpenAI = async function(api_key, file_url, purpose) {
     if (!api_key.value) return "Error: OpenAI API Key is required.";
     if (!file_url.value) return "Error: File URL is required.";
 
@@ -19,12 +19,15 @@ window.uploadFileToVectorStore = async function(api_key, file_url, purpose) {
         const fileName = fileUrl.split("/").pop().split("?")[0]; // Extract filename from URL
         const fileExtension = fileName.split('.').pop().toLowerCase();
 
-        // LIST OF ALLOWED FILE TYPES FOR VECTOR STORES
-        const allowedFileTypes = ["txt", "json", "csv", "tsv", "md", "pdf", "docx", "pptx"];
+        // LIST OF ALLOWED FILE TYPES BASED ON PURPOSE
+        const allowedFileTypes = {
+            "assistants": ["txt", "json", "csv", "tsv", "md", "pdf", "docx", "pptx"], // Vector store
+            "vision": ["jpg", "jpeg", "png", "webp", "gif"] // Vision API
+        };
 
-        // CHECK IF FILE TYPE IS SUPPORTED
-        if (!allowedFileTypes.includes(fileExtension)) {
-            throw new Error(`Unsupported file type: .${fileExtension}. Allowed types: ${allowedFileTypes.join(", ")}`);
+        // CHECK IF FILE TYPE IS SUPPORTED FOR THE SELECTED PURPOSE
+        if (!allowedFileTypes[uploadPurpose] || !allowedFileTypes[uploadPurpose].includes(fileExtension)) {
+            throw new Error(`Unsupported file type: .${fileExtension} for purpose: ${uploadPurpose}. Allowed types: ${allowedFileTypes[uploadPurpose]?.join(", ") || "None"}`);
         }
 
         // CREATE FILE OBJECT PRESERVING MIME TYPE
