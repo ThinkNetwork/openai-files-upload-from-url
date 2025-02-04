@@ -1,4 +1,4 @@
-window.uploadFileToVectorStore = async function(api_key, file_url) {
+window.uploadFileToVectorStore = async function(api_key, file_url, purpose) {
     if (!api_key.value) return "Error: OpenAI API Key is required.";
     if (!file_url.value) return "Error: File URL is required.";
 
@@ -6,6 +6,7 @@ window.uploadFileToVectorStore = async function(api_key, file_url) {
         // SET VARIABLES
         const OPENAI_API_KEY = api_key.value;
         const fileUrl = file_url.value.trim();
+        const uploadPurpose = purpose?.value || "assistants"; // Default to "assistants"
 
         // FETCH FILE AS BLOB
         const response = await fetch(fileUrl);
@@ -32,7 +33,7 @@ window.uploadFileToVectorStore = async function(api_key, file_url) {
         // CREATE FORM DATA
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("purpose", "assistants");
+        formData.append("purpose", uploadPurpose);
 
         // UPLOAD TO OPENAI
         const uploadResponse = await fetch("https://api.openai.com/v1/files", {
