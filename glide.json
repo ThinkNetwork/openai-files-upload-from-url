@@ -1,9 +1,8 @@
-
 [
   {
     "kind": "column",
-    "name": "OpenAI (Assistants)",
-    "description": "Create, modify and run OpenAI Assistants.",
+    "name": "OpenAI (Upload File to Vector Store)",
+    "description": "Uploads a file to OpenAI's vector store, ensuring only supported file types are accepted.",
     "author": "Gavin Horne <gavin@thinknetwork.com.au>",
     "params": [
       {
@@ -12,19 +11,15 @@
         "type": "string"
       },
       {
-        "name": "endpoint",
-        "displayName": "API Endpoint (Required)",
+        "name": "file_url",
+        "displayName": "File URL (Required)",
         "type": "string"
       },
       {
-        "name": "body",
-        "displayName": "Body (JSON Schema Required)",
-        "type": "string"
-      },
-      {
-        "name": "json",
-        "displayName": "JSON Schema (Output)",
-        "type": "string"
+        "name": "purpose",
+        "displayName": "Purpose (Optional, defaults to 'assistants')",
+        "type": "string",
+        "default": "assistants"
       }
     ],
     "result": {
