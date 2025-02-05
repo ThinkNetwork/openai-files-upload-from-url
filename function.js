@@ -32,7 +32,7 @@ window.function = async function(api_key, file_url, purpose) {
             } else if (fileExtensions.every(ext => allowedFileTypes["vision"].includes(ext))) {
                 purpose.value = "vision";
             } else {
-                throw new Error("Unsupported file type. Allowed types: " + JSON.stringify(allowedFileTypes));
+                throw new Error("Unsupported file type. Allowed filetypes: " + JSON.stringify(allowedFileTypes));
             }
         }
         
