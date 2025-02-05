@@ -21,7 +21,7 @@ window.function = async function(api_key, file_url, purpose) {
 
         // LIST OF ALLOWED FILE TYPES BASED ON PURPOSE
         const allowedFileTypes = {
-            "assistants": ["txt", "json", "csv", "tsv", "md", "pdf", "docx", "pptx"], // Vector store
+            "assistants": ["txt", csv, "md", "pdf", "docx", "pptx"], // Vector store
             "vision": ["jpg", "jpeg", "png", "webp", "gif"] // Vision API
         };
 
