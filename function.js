@@ -37,9 +37,9 @@ window.function = async function(api_key, file_url, purpose) {
         }
         
         // CHECK IF FILE TYPE IS SUPPORTED FOR THE SELECTED PURPOSE
-        if (!allowedFileTypes[uploadPurpose] || !allowedFileTypes[uploadPurpose].includes(fileExtension)) {
-            throw new Error(`Unsupported file type: .${fileExtension} for purpose: ${uploadPurpose}. Allowed types: ${allowedFileTypes[uploadPurpose]?.join(", ") || "None"}`);
-        }
+        //if (!allowedFileTypes[uploadPurpose] || !allowedFileTypes[uploadPurpose].includes(fileExtension)) {
+        //    throw new Error(`Unsupported file type: .${fileExtension} for purpose: ${uploadPurpose}. Allowed types: ${allowedFileTypes[uploadPurpose]?.join(", ") || "None"}`);
+        //}
 
         // CREATE FILE OBJECT PRESERVING MIME TYPE
         const file = new File([blob], fileName, { type: blob.type });
