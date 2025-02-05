@@ -27,12 +27,13 @@ window.function = async function(api_key, file_url, purpose) {
 
         // DETERMINE PURPOSE IF NOT PROVIDED
         if (!purpose.value) {
-            if (fileExtension.every(ext => allowedFileTypes["assistants"].includes(ext))) {
+            if (allowedFileTypes["assistants"].includes(fileExtension)) {
                 purpose.value = "assistants";
-            } else if (fileExtension.every(ext => allowedFileTypes["vision"].includes(ext))) {
+            } else if (allowedFileTypes["vision"].includes(fileExtension)) {
                 purpose.value = "vision";
             } else {
-                throw new Error("Unsupported file type. Allowed filetypes: " + JSON.stringify(allowedFileTypes));
+                throw new Error("Unsupported file type: ." + fileExtension + 
+                    ". Allowed filetypes: " + JSON.stringify(allowedFileTypes));
             }
         }
         
