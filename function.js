@@ -27,17 +27,17 @@ window.function = async function(api_key, file_url, purpose) {
 
         // DETERMINE PURPOSE IF NOT PROVIDED
         if (allowedFileTypes["assistants"].includes(fileExtension)) {
-            uploadPurpose = "assistants";
+            purpose.value = "assistants";
         } else if (allowedFileTypes["vision"].includes(fileExtension)) {
-            uploadPurpose = "vision";
+            purpose.value = "vision";
         } else {
             throw new Error("Unsupported file type: ." + fileExtension + 
                 ". Allowed filetypes: " + JSON.stringify(allowedFileTypes));
         }
         
         // CHECK IF FILE TYPE IS SUPPORTED FOR THE SELECTED PURPOSE
-        //if (!allowedFileTypes[uploadPurpose] || !allowedFileTypes[uploadPurpose].includes(fileExtension)) {
-        //    throw new Error(`Unsupported file type: .${fileExtension} for purpose: ${uploadPurpose}. Allowed types: ${allowedFileTypes[uploadPurpose]?.join(", ") || "None"}`);
+        //if (!allowedFileTypes[purpose.value] || !allowedFileTypes[purpose.value].includes(fileExtension)) {
+        //    throw new Error(`Unsupported file type: .${fileExtension} for purpose: ${purpose.value}. Allowed types: ${allowedFileTypes[purpose.value]?.join(", ") || "None"}`);
         //}
 
         // CREATE FILE OBJECT PRESERVING MIME TYPE
@@ -46,7 +46,7 @@ window.function = async function(api_key, file_url, purpose) {
         // CREATE FORM DATA
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("purpose", uploadPurpose);
+        formData.append("purpose", purpose.value);
 
         // UPLOAD TO OPENAI
         const uploadResponse = await fetch("https://api.openai.com/v1/files", {
