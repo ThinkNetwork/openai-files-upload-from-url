@@ -26,15 +26,13 @@ window.function = async function(api_key, file_url, purpose) {
         };
 
         // DETERMINE PURPOSE IF NOT PROVIDED
-        if (!purpose.value) {
-            if (allowedFileTypes["assistants"].includes(fileExtension)) {
-                purpose.value = "assistants";
-            } else if (allowedFileTypes["vision"].includes(fileExtension)) {
-                purpose.value = "vision";
-            } else {
-                throw new Error("Unsupported file type: ." + fileExtension + 
-                    ". Allowed filetypes: " + JSON.stringify(allowedFileTypes));
-            }
+        if (allowedFileTypes["assistants"].includes(fileExtension)) {
+            uploadPurpose = "assistants";
+        } else if (allowedFileTypes["vision"].includes(fileExtension)) {
+            uploadPurpose = "vision";
+        } else {
+            throw new Error("Unsupported file type: ." + fileExtension + 
+                ". Allowed filetypes: " + JSON.stringify(allowedFileTypes));
         }
         
         // CHECK IF FILE TYPE IS SUPPORTED FOR THE SELECTED PURPOSE
