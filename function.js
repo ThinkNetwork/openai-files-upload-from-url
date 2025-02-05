@@ -1,4 +1,4 @@
-window.uploadFileToOpenAI = async function(api_key, file_url, purpose) {
+window.function = async function(api_key, file_url, purpose) {
     if (!api_key.value) return "Error: OpenAI API Key is required.";
     if (!file_url.value) return "Error: File URL is required.";
 
