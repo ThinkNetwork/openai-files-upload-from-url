@@ -27,9 +27,9 @@ window.function = async function(api_key, file_url, purpose) {
 
         // DETERMINE PURPOSE IF NOT PROVIDED
         if (!purpose.value) {
-            if (fileExtensions.every(ext => allowedFileTypes["assistants"].includes(ext))) {
+            if (fileExtension.every(ext => allowedFileTypes["assistants"].includes(ext))) {
                 purpose.value = "assistants";
-            } else if (fileExtensions.every(ext => allowedFileTypes["vision"].includes(ext))) {
+            } else if (fileExtension.every(ext => allowedFileTypes["vision"].includes(ext))) {
                 purpose.value = "vision";
             } else {
                 throw new Error("Unsupported file type. Allowed filetypes: " + JSON.stringify(allowedFileTypes));
