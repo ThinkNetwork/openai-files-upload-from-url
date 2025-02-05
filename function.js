@@ -6,7 +6,7 @@ window.function = async function(api_key, file_url, purpose) {
         // SET VARIABLES
         const OPENAI_API_KEY = api_key.value;
         const fileUrl = file_url.value.trim();
-        const uploadPurpose = purpose?.value || "assistants"; // Default to "assistants"
+        const uploadPurpose = purpose.value;
 
         // FETCH FILE AS BLOB
         const response = await fetch(fileUrl);
